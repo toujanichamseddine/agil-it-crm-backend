@@ -6,13 +6,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
-	<groupId>com.bezkoder</groupId>
-	<artifactId>spring-boot-login-example</artifactId>
+	<groupId>fr.agilit</groupId>
+	<artifactId>agil-it-crm-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-boot-login-example</name>
-	<description>Spring Boot Login example with Spring Security, JWT and MySQL - Rest API</description>
+	<name>agil-it-crm-backend</name>
+	<description>Agil-it crm backend application</description>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -47,6 +47,12 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.11.0</version>
 		</dependency>
 		
 		<dependency>
