@@ -1,8 +1,9 @@
 package fr.agilit.crm.controllers;
 
+import fr.agilit.crm.dto.ProjectDTO;
+import fr.agilit.crm.dto.mapper.ProjectMapper;
 import fr.agilit.crm.models.Project;
 import fr.agilit.crm.repository.ProjectRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,54 +11,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class ProjectController {
-    @Autowired
-    ProjectRepository projectRepository;
+
+    private final ProjectRepository projectRepository;
+
+    private final ProjectMapper projectMapper;
+
+    public ProjectController(ProjectRepository projectRepository, ProjectMapper projectMapper) {
+        this.projectRepository = projectRepository;
+        this.projectMapper = projectMapper;
+    }
 
     @GetMapping("/projects")
-    public ResponseEntity<List<Project>> getAllProjects(@RequestParam(required = false) String title) {
+    public ResponseEntity<List<ProjectDTO>> getAllProjects(@RequestParam(required = false) String title) {
         try {
-            List<Project> projects = new ArrayList<Project>();
+            List<Project> projects = new ArrayList<>();
 
             if (title == null)
-                projectRepository.findAll().forEach(projects::add);
+                projects.addAll(projectRepository.findAll());
             else
-                projectRepository.findByTitleContaining(title).forEach(projects::add);
+                projects.addAll(projectRepository.findByTitleContaining(title));
 
             if (projects.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-
-            return new ResponseEntity<>(projects, HttpStatus.OK);
+            List<ProjectDTO> projectDTOS = projects.stream().map(
+                    projectMapper).collect(Collectors.toList());
+            return new ResponseEntity<>(projectDTOS, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/projects/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable("id") long id) {
+    public ResponseEntity<ProjectDTO> getProjectById(@PathVariable("id") long id) {
         Optional<Project> projectData = projectRepository.findById(id);
 
-        if (projectData.isPresent()) {
-            return new ResponseEntity<>(projectData.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return projectData.map(project -> new ResponseEntity<>(projectMapper.apply(project), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/projects")
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+    public ResponseEntity<ProjectDTO> createProject(@RequestBody Project project) {
         try {
             Project newProject = new Project(project.getTitle(), project.getDescription(), false);
             newProject.setCreationDate(project.getCreationDate());
             newProject.setUpdateDate(project.getUpdateDate());
             Project _project = projectRepository
                     .save(newProject);
-            return new ResponseEntity<>(_project, HttpStatus.CREATED);
+            return new ResponseEntity<>(projectMapper.apply(_project), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
