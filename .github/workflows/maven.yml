@@ -39,7 +39,7 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/agil-it-crm-backend:latest
     - name: Login to Docker hub
       uses: docker/login-action@v1
-      with:
+      secrets:
         username: ${{ secrects.DOCKER_HUB_USERNAME }}
         password: ${{ secrects.DOCKER_HUB_ACCESS_TOKEN }}
 
