@@ -84,6 +84,7 @@ public class ProjectController {
             _project.setPublished(project.isPublished());
             return new ResponseEntity<>(projectRepository.save(_project), HttpStatus.OK);
         } else {
+            log.info("No project to update");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
