@@ -68,6 +68,7 @@ public class ProjectController {
                     .save(newProject);
             return new ResponseEntity<>(projectMapper.apply(_project), HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("Error while project creation");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
