@@ -4,6 +4,7 @@ import fr.agilit.crm.dto.ProjectDTO;
 import fr.agilit.crm.dto.mapper.ProjectMapper;
 import fr.agilit.crm.models.Project;
 import fr.agilit.crm.repository.ProjectRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
+@Slf4j
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
@@ -44,6 +46,7 @@ public class ProjectController {
                     projectMapper).collect(Collectors.toList());
             return new ResponseEntity<>(projectDTOS, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Error getting projects");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
